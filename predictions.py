@@ -1,13 +1,19 @@
-from sklearn.externals import joblib
+from os import getenv
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
+from dotenv import load_dotenv
 from flask import Flask
 from flask import request
 from flask import json
+from sklearn.externals import joblib
 
-BUCKET_NAME = 'your-s3-bucket-name'
-MODEL_FILE_NAME = 'your-model-name.pkl'
-MODEL_LOCAL_PATH = '/tmp/' + MODEL_FILE_NAME
+
+# Load environmental variables
+load_dotenv()
+
+BUCKET_NAME = getenv('BUCKET_NAME')
+MODEL_FILE_NAME = getenv('MODEL_FILE_NAME')
+MODEL_LOCAL_PATH = getenv('MODEL_LOCAL_PATH')
 
 app = Flask(__name__)
 
