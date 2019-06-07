@@ -1,10 +1,12 @@
 from os import getenv
+
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 from dotenv import load_dotenv
 from flask import Flask
 from flask import request
 from flask import json
+import numpy as np
 from sklearn.externals import joblib
 
 
@@ -29,7 +31,7 @@ def index():
 
 def load_model():
     conn = S3Connection()
-    bucket = conn.create_bucket(BUCKET_NAME)
+    bucket = conn.get_bucket(BUCKET_NAME)
     key_obj = Key(bucket)
     key_obj.key = MODEL_FILE_NAME
 
@@ -39,5 +41,5 @@ def load_model():
 
 def predict(data):
     # Process your data, create a dataframe/vector and make your predictions
-    final_formatted_data = []
-    return load_model().predict(final_formatted_data)
+    final_formatted_data = np.expand_dims(np.fromstring(data.strip('['), sep=','), axis=0)
+    return load_model().predict(final_formatted_data).tolist()
