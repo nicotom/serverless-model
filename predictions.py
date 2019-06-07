@@ -11,16 +11,27 @@ MODEL_LOCAL_PATH = '/tmp/' + MODEL_FILE_NAME
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['POST'])
 def index():
-  payload = json.loads(request.get_data().decode('utf-8'))
-  prediction = predict(payload['payload'])
-  data = {}
-  data['data'] = prediction[-1]
-  return json.dumps(data)
+    payload = json.loads(request.get_data().decode('utf-8'))
+    prediction = predict(payload['payload'])
+    data = dict()
+    data['data'] = prediction[-1]
+    return json.dumps(data)
+
 
 def load_model():
-  print 'Loading model from S3'
+    conn = S3Connection()
+    bucket = conn.create_bucket(BUCKET_NAME)
+    key_obj = Key(bucket)
+    key_obj.key = MODEL_FILE_NAME
+
+    contents = key_obj.get_contents_to_filename(MODEL_LOCAL_PATH)
+    return joblib.load(MODEL_LOCAL_PATH)
+
 
 def predict(data):
-  print 'Making predictions'
+    # Process your data, create a dataframe/vector and make your predictions
+    final_formatted_data = []
+    return load_model().predict(final_formatted_data)
