@@ -1,7 +1,5 @@
 from os import getenv
-
-from boto.s3.key import Key
-from boto.s3.connection import S3Connection
+import boto3
 from dotenv import load_dotenv
 from flask import Flask
 from flask import request
@@ -17,6 +15,10 @@ BUCKET_NAME = getenv('BUCKET_NAME')
 MODEL_FILE_NAME = getenv('MODEL_FILE_NAME')
 MODEL_LOCAL_PATH = getenv('MODEL_LOCAL_PATH')
 
+# BUCKET_NAME = 'gordios-serverless-model'
+# MODEL_FILE_NAME = 'model.pkl'
+# MODEL_LOCAL_PATH = '/tmp/model.pkl'
+
 app = Flask(__name__)
 
 
@@ -30,12 +32,8 @@ def index():
 
 
 def load_model():
-    conn = S3Connection()
-    bucket = conn.get_bucket(BUCKET_NAME)
-    key_obj = Key(bucket)
-    key_obj.key = MODEL_FILE_NAME
-
-    contents = key_obj.get_contents_to_filename(MODEL_LOCAL_PATH)
+    s3 = boto3.client('s3')
+    s3.download_file(BUCKET_NAME, MODEL_FILE_NAME, MODEL_LOCAL_PATH)
     return joblib.load(MODEL_LOCAL_PATH)
 
 
@@ -43,3 +41,7 @@ def predict(data):
     # Process your data, create a dataframe/vector and make your predictions
     final_formatted_data = np.expand_dims(np.fromstring(data.strip('['), sep=','), axis=0)
     return load_model().predict(final_formatted_data).tolist()
+
+
+if __name__ == "__main__":
+    app.run()
