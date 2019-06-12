@@ -15,9 +15,6 @@ BUCKET_NAME = getenv('BUCKET_NAME')
 MODEL_FILE_NAME = getenv('MODEL_FILE_NAME')
 MODEL_LOCAL_PATH = getenv('MODEL_LOCAL_PATH')
 
-# BUCKET_NAME = 'gordios-serverless-model'
-# MODEL_FILE_NAME = 'model.pkl'
-# MODEL_LOCAL_PATH = '/tmp/model.pkl'
 
 app = Flask(__name__)
 
